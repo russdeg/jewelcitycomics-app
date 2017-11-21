@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <head>
+        <link src="Wyomind_Elasticsearch::js/elasticsearch.js"/>
+        <css src="Wyomind_Elasticsearch::css/elasticsearch.css"/>
+    </head>
+    <body/>
+</page>

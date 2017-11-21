@@ -1,0 +1,36 @@
+{
+    "name": "wyomind/elasticsearch",
+    "description": "The Elasticsearch® extension allows you to improve the default Magento search results and to enhance search results relevancy. ",
+    "type": "magento2-module",
+    "version": "5.4.1.1",
+    "license": [
+        "Commercial License - Copyright 2017 - WYOMIND Sarl - Purchasing any product (Software) from the Wyomind.com web-site means buyer agree to the following statements (see LICENSE.TXT)"
+    ],
+    "require": {
+        "php": "~5.5.0|~5.6.0|~7.0.0",
+        "magento/framework": ">=100.0.0",
+        "wyomind/core": ">=3.0.0",
+        "magento/module-catalog-search": "^100.0.0",
+        "elasticsearch/elasticsearch": "^5.0"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Wyomind\\Elasticsearch\\": ""
+        }
+    },
+    "extra": {
+        "map": [
+            [
+                "autocomplete.php",
+                "../../"
+            ],
+            [
+                "pub/autocomplete.php",
+                "../../pub/"
+            ]
+        ]
+    }
+}

@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2016 Wyomind. All rights reserved.
+ * https://www.wyomind.com
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <elasticsearch>
+            <license>
+                <!--required for License Manager -->
+                <extension_label>ElasticSearch</extension_label>
+                <extension_version>5.4.1.1</extension_version>
+                <extension_code>els</extension_code>
+                <get_online_license>1</get_online_license>
+            </license>
+        </elasticsearch>
+        <catalog>
+            <search>
+                <elasticsearch>
+                    <enable_debug_mode>0</enable_debug_mode>
+                    <enable_suggest>1</enable_suggest>
+                    <servers>127.0.0.1:9200</servers>
+                    <verify_host>1</verify_host>
+                    <timeout>5</timeout>
+                    <index_prefix/>
+                    <index_settings><![CDATA[{
+   "number_of_shards": 1,
+   "number_of_replicas": 0,
+   "analysis": {
+       "analyzer": {
+           "std": {
+               "tokenizer": "standard",
+               "char_filter": "html_strip",
+               "filter": ["standard", "elision", "asciifolding", "lowercase", "length"]
+           },
+           "keyword": {
+               "tokenizer": "keyword",
+               "filter": ["asciifolding", "lowercase"]
+           },
+           "keyword_prefix": {
+               "tokenizer": "keyword",
+               "filter": ["asciifolding", "lowercase", "edge_ngram_front"]
+           },
+           "text_prefix": {
+               "tokenizer": "standard",
+               "char_filter": "html_strip",
+               "filter": ["standard", "elision", "asciifolding", "lowercase", "edge_ngram_front"]
+           },
+           "text_suffix": {
+               "tokenizer": "standard",
+               "char_filter": "html_strip",
+               "filter": ["standard", "elision", "asciifolding", "lowercase", "edge_ngram_back"]
+           }
+       },
+       "filter": {
+           "edge_ngram_front": {
+               "type": "edgeNGram",
+               "min_gram": 2,
+               "max_gram": 10,
+               "side": "front"
+           },
+           "edge_ngram_back": {
+               "type": "edgeNGram",
+               "min_gram": 2,
+               "max_gram": 10,
+               "side": "back"
+           },
+           "length": {
+               "type": "length",
+               "min": 1
+           }
+       }
+   }
+}]]></index_settings>
+                    <safe_reindex>1</safe_reindex>
+                    <query_operator>AND</query_operator>
+                    <enable_fuzzy_query>1</enable_fuzzy_query>
+                    <fuzzy_query_mode>AUTO</fuzzy_query_mode>
+                    <enable_product_weight>0</enable_product_weight>
+                </elasticsearch>
+            </search>
+        </catalog>
+        <elasticsearch>
+            <autocomplete>
+                <enable>1</enable>
+                <limit>5</limit>
+                <no_result_template><![CDATA[<li>
+    <span>No Result</span>
+</li>]]></no_result_template>
+            </autocomplete>
+            <types>
+                <product>
+                    <enable>1</enable>
+                    <auto_redirect>0</auto_redirect>
+                    <enable>1</enable>
+                    <enable_autocomplete>1</enable_autocomplete>
+                    <image_size>50</image_size>
+                    <autocomplete_template><![CDATA[<li class="qs-section">
+    <span class="qs-option-name">Products</span>
+    <span aria-hidden="true" class="amount"><%- data.count %></span>
+</li>
+<% _.each(data.docs, function(doc) { %>
+    <li role="option" class="qs-option">
+        <a href="<%- doc.shortest_url %>">
+            <% if (doc.image) { %>
+                <img src="<%- doc.image %>" alt="">
+            <% } %>
+            <div class="info">
+                <span class="name"><%= doc.name %></span>
+                <span class="price">
+                    <div class="price-box">
+                        <% if (doc.type_id == 'bundle') { %>
+                            <p class="price-from">
+                                <span class="price-label">From:&nbsp;</span>
+                                <span class="price"><%= _.getFormattedPrice(doc.prices.min_price, doc.tax_class_id) %></span>
+                            </p>
+                            <p class="price-to">
+                                <span class="price-label">To:&nbsp;</span>
+                                <span class="price"><%= _.getFormattedPrice(doc.prices.max_price, doc.tax_class_id) %></span>
+                            </p>
+                        <% } else if (doc.type_id == 'grouped') { %>
+                            <p class="minimal-price">
+                                <span class="price-label">Starting at:&nbsp;</span>
+                                <span class="price"><%= _.getFormattedPrice(doc.prices.min_price, doc.tax_class_id) %></span>
+                            </p>
+                        <% } else { %>
+                            <% if (doc.prices.final_price < doc.prices.price) { %>
+                                <p class="old-price">
+                                    <span class="price"><%= _.getFormattedPrice(doc.prices.price, doc.tax_class_id) %></span>
+                                </p>
+                                <p class="special-price">
+                                    <span class="price"><%= _.getFormattedPrice(doc.prices.final_price, doc.tax_class_id) %></span>
+                                </p>
+                            <% } else { %>
+                                <span class="regular-price">
+                                    <span class="price"><%= _.getFormattedPrice(doc.prices.price, doc.tax_class_id) %></span>
+                                </span>
+                            <% } %>
+                        <% } %>
+                    </div>
+                </span>
+            </div>
+            <div class="clearer"><!-- --></div>
+        </a>
+    </li>
+<% }); %>]]></autocomplete_template>
+                </product>
+                <category>
+                    <enable>1</enable>
+                    <enable_autocomplete>1</enable_autocomplete>
+                    <enable_search>1</enable_search>
+                    <limit/>
+                    <show_path>1</show_path>
+                    <attributes><![CDATA[name,description]]></attributes>
+                    <autocomplete_template><![CDATA[<li class="qs-section">
+    <span class="qs-option-name">Categories</span>
+    <span aria-hidden="true" class="amount"><%- data.count %></span>
+</li>
+<% _.each(data.docs, function(doc) { %>
+    <li role="option" class="qs-option">
+        <a href="<%- doc.url %>">
+            <div class="info">
+                <span class="name"><%- doc.path %></span>
+            </div>
+            <div class="clearer"><!-- --></div>
+        </a>
+    </li>
+<% }); %>]]></autocomplete_template>
+                </category>
+                <cms>
+                    <enable>1</enable>
+                    <enable_autocomplete>1</enable_autocomplete>
+                    <enable_search>1</enable_search>
+                    <limit/>
+                    <attributes><![CDATA[identifier,title,content_heading,content]]></attributes>
+                    <excluded_pages/>
+                    <autocomplete_template><![CDATA[<li class="qs-section">
+    <span class="qs-option-name">Pages</span>
+    <span aria-hidden="true" class="amount"><%- data.count %></span>
+</li>
+<% _.each(data.docs, function(doc) { %>
+    <li role="option" class="qs-option">
+        <a href="<%= _.getBaseUrl() + doc.identifier %>">
+            <div class="info">
+                <span class="name"><%- doc.title %></span>
+            </div>
+            <div class="clearer"><!-- --></div>
+        </a>
+    </li>
+<% }); %>]]></autocomplete_template>
+                </cms>
+            </types>
+        </elasticsearch>
+    </default>
+</config>

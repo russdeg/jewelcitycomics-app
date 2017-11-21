@@ -1,0 +1,26 @@
+.search-autocomplete ul.wyomind li.qs-section {
+    background-color: #f4f4f4;
+    text-transform: uppercase;
+}
+
+.search-autocomplete ul.wyomind li img {
+    float: left;
+    margin-right: 6px;
+    background-color: #fff;
+}
+
+.search-autocomplete ul.wyomind li .qs-option-name {
+    vertical-align: top;
+}
+
+.search-autocomplete ul.wyomind li span.price {
+    font-weight: 600;
+}
+
+.search-autocomplete ul.wyomind li .clearer {
+    clear: both;
+}
+
+.search-autocomplete ul.wyomind li a:hover {
+    text-decoration: none;
+}
